@@ -5,11 +5,11 @@ from gurobipy import GRB
 
 
 # Parameters
-df = pd.read_csv("12.01/12.01.csv")
-timelimit = 3600
+df = pd.read_csv("12.01/12.01.test.csv")
+timelimit = 1800
 
 
-distance= pd.read_csv("12.01/distance_matrix_12.01.csv", header=None)
+distance= pd.read_csv("12.01/distance_matrix_12.01_test.csv", header=None)
 distance= np.array(distance)
 
 #opening time
@@ -59,7 +59,9 @@ w = model.addVars(distance.shape[0], vehicles.shape[0], vtype= GRB.CONTINUOUS, n
 
 model.update()
 # Objective function: minimize total distance
-model.setObjective(gp.quicksum(distance[i][j] * w[j,k] * x[i,j,k] * vehicles[k,2]  for i in range(distance.shape[0]) for j in range(distance.shape[0]) for k in range(vehicles.shape[0]) if i != j)
+model.setObjective(gp.quicksum(distance[i][j] * w[j,k] * vehicles[k,2]
+                               for i in range(distance.shape[0]) for j in range(distance.shape[0]) 
+                               for k in range(vehicles.shape[0]) if i != j)
                    ,GRB.MINIMIZE)
 
 # Constraints
@@ -92,7 +94,7 @@ for i in range(1, distance.shape[0]):
     for j in range(distance.shape[0]):
         for k in range(vehicles.shape[0]): 
             if i != j: 
-                model.addConstr(t[j,k] >= t[i,k] + distance[i][j]/50000 - M * (1 - x[i, j,k])) 
+                model.addConstr(t[j,k] >= t[i,k] + delay + distance[i][j]/50000 - M * (1 - x[i, j,k]))
 
 #Supply carried should be <= capacity of vehicle
 for k in range(vehicles.shape[0]): 
@@ -111,7 +113,7 @@ model.addConstr(y[0,6]>= y[0,7])
 model.addConstr(y[0,7]>= y[0,8])
 model.addConstr(y[0,9]>= y[0,10])
 
-#if supply is 0 to node the node should not be visited 
+#if supply is 0 to node the node should not be visited
 for i in range(1,distance.shape[0]):
     for k in range(vehicles.shape[0]): 
         model.addConstr(s[i,k] <= M * y[i,k])
@@ -126,12 +128,12 @@ for i in range(1, distance.shape[0]):
 # empty vehicle weight calculations
 for i in range(1, distance.shape[0]):
     for k in range(vehicles.shape[0]): 
-            model.addConstr(3600 <= w[0,k] + M* (1-x[i,0,k]))
+            model.addConstr(3600*x[i,0,k] <= w[0,k])
 
 # if the total present vehicle weight is 0 at node i the node should not be visited
 for i in range(distance.shape[0]):
     for k in range(vehicles.shape[0]):
-        model.addConstr( M * y[i,k]>= w[i,k])
+        model.addConstr( y[i,k]*3600<= w[i,k])
 
 # Solve and set parameters
 model.setParam('TimeLimit', timelimit)  
