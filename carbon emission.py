@@ -5,11 +5,11 @@ from gurobipy import GRB
 
 
 # Parameters
-df = pd.read_csv("11.01/11.01.24.csv")
+df = pd.read_csv("18.01/18.01.csv")
 timelimit = 3600
 
 
-distance= pd.read_csv("11.01/distance_matrix_11.01.csv", header=None)
+distance= pd.read_csv("18.01/distance_matrix_18.01.csv", header=None)
 distance= np.array(distance)
 
 #opening time
