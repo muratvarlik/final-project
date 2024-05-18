@@ -5,11 +5,11 @@ from gurobipy import GRB
 
 
 # Parameters
-df = pd.read_csv("18.01/18.01.csv")
+df = pd.read_csv("16.01/16.01.csv")
 timelimit = 3600
 
 
-distance= pd.read_csv("18.01/distance_matrix_18.01.csv", header=None)
+distance= pd.read_csv("16.01/distance_matrix_16.01.csv", header=None)
 distance= np.array(distance)
 
 #opening time
@@ -94,7 +94,7 @@ for i in range(1, distance.shape[0]):
     for j in range(distance.shape[0]):
         for k in range(vehicles.shape[0]): 
             if i != j: 
-                model.addConstr(t[j,k] >= t[i,k] + delay + distance[i][j]/50000 - M * (1 - x[i, j,k]))
+                model.addConstr(t[j,k] >= t[i,k] + delay + distance[i][j]/70000 - M * (1 - x[i, j,k]))
 
 #Supply carried should be <= capacity of vehicle
 for k in range(vehicles.shape[0]): 

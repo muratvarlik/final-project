@@ -32,7 +32,7 @@ df = pd.read_csv("18.01/18.01.csv")
 
 locations = df[['Enlem', 'Boylam']]
 locations = locations.to_numpy().tolist()
-api_key = 'AIzaSyBMW-Y0w7T_RrIvsoIArZNxyB2r5lkuuMw'
+api_key = 'insert api key here'
 distance_matrix = get_distance_matrix(locations, api_key)
 
 df = pd.DataFrame(distance_matrix)
